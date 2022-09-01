@@ -1,4 +1,5 @@
 
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 
 Widget myDivider() => Padding(
@@ -10,7 +11,7 @@ Widget myDivider() => Padding(
   ),
 );
 
-Widget buildArticleItem(article)=>Padding(
+Widget buildArticleItem(article,context)=>Padding(
   padding: const EdgeInsets.all(20.0),
   child: Row(
     children: [
@@ -19,11 +20,10 @@ Widget buildArticleItem(article)=>Padding(
         height: 120,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-                image: NetworkImage(
-                    '${article['urlToImage']}'),
-                fit: BoxFit.cover
-            )
+            image: article['urlToImage'] != null ? DecorationImage(
+              image: NetworkImage(article['urlToImage']),
+              fit: BoxFit.cover,
+            ): const DecorationImage(image: AssetImage('assets/images/placeholder.jpg')),
         ),
       ),
       const SizedBox(width: 20,),
@@ -35,10 +35,7 @@ Widget buildArticleItem(article)=>Padding(
             mainAxisAlignment: MainAxisAlignment.start,
             children:  [
               Expanded(
-                child: Text('${article['title']} ',style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                child: Text('${article['title']} ',style: Theme.of(context).textTheme.bodyText1,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -53,3 +50,12 @@ Widget buildArticleItem(article)=>Padding(
     ],
   ),
 );
+
+Widget articleBuilder(list)=> ConditionalBuilder(
+    condition: list.isNotEmpty,
+    builder: (context) =>ListView.separated(
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context,index)=>buildArticleItem(list[index],context),
+        separatorBuilder: (context,index)=> myDivider(),
+        itemCount: list.length),
+    fallback: (context) => const Center(child: CircularProgressIndicator()));
