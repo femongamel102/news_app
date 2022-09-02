@@ -1,6 +1,39 @@
-
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
+
+Widget defaultTextFormField({
+  required TextEditingController controller,
+  final TextInputType? keyboardType,
+  Function? onSubmit,
+  required String labelText,
+  ValueChanged<String>? onChanged,
+  IconData? prefixIcon,
+  bool obscureText = false,
+  IconData? suffixIcon,
+  final VoidCallback? suffixPressed,
+  ValueChanged<String>? onFieldSubmitted,
+  FormFieldValidator<String>? validator,
+
+  isPassword = false,
+}) =>
+    TextFormField(
+      controller: controller,
+      onChanged: onChanged,
+      decoration:  InputDecoration(
+        labelText: labelText ,
+        prefixIcon: Icon(prefixIcon),
+        suffixIcon: suffixIcon != null ? IconButton(
+          onPressed: suffixPressed,
+          icon: Icon(suffixIcon),
+        ) : null,
+        border: OutlineInputBorder(),
+      ),
+      validator: validator,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      onFieldSubmitted: onFieldSubmitted,
+    );
+
 
 Widget myDivider() => Padding(
   padding: const EdgeInsetsDirectional.only(start: 20.0),
@@ -59,3 +92,9 @@ Widget articleBuilder(list)=> ConditionalBuilder(
         separatorBuilder: (context,index)=> myDivider(),
         itemCount: list.length),
     fallback: (context) => const Center(child: CircularProgressIndicator()));
+
+void navigateTo(context,widget)=> Navigator.push(
+    context,
+    MaterialPageRoute(
+        builder: (context)=>widget),
+);

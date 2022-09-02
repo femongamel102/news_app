@@ -9,7 +9,9 @@ import 'package:news_app/shared/cubit/states.dart';
 import 'package:news_app/shared/network/local/cache_helper.dart';
 import 'package:news_app/shared/network/remote/dio_helper.dart';
 
-void main()async{
+import 'layout/news_app/cubit/cubit.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = MyBlocObserver();
   DioHelper.init();
@@ -20,24 +22,26 @@ void main()async{
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp(this.isDark,  {Key? key}) : super(key: key);
+  const MyApp(this.isDark, {Key? key}) : super(key: key);
   final bool isDark;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AppCubit()..changeAppMode(fromShared: isDark),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AppCubit()..changeAppMode(fromShared: isDark),
+        ),
+        BlocProvider(
+          create: (context) => NewsCubit()..getBusiness(),
+        ),
+      ],
       child: BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {
-        },
+        listener: (context, state) {},
         builder: (context, state) {
-
           return MaterialApp(
-
-            themeMode: AppCubit.get(context).isDark
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            themeMode:
+                AppCubit.get(context).isDark ? ThemeMode.dark : ThemeMode.light,
             darkTheme: ThemeData(
-
                 textTheme: const TextTheme(
                     bodyText1: TextStyle(
                         fontSize: 18,
@@ -67,6 +71,18 @@ class MyApp extends StatelessWidget {
                   unselectedItemColor: Colors.grey,
                   elevation: 20,
                   backgroundColor: HexColor('333739'),
+                ),
+                inputDecorationTheme: const InputDecorationTheme(
+                  contentPadding: EdgeInsets.all(8),
+                  prefixIconColor: Colors.grey,
+                  labelStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.grey,
+                      width: 1.5,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
                 )),
             theme: ThemeData(
                 primarySwatch: Colors.deepOrange,
